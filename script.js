@@ -60,7 +60,8 @@ let currentOperand = '';
 let operation = undefined;
 
 const numberButtons = document.querySelectorAll('[data-num]');
-const operationButtons = document.querySelectorAll('[data-op]');
+const operationButtons = document.querySelectorAll('#op');
+const equalTo = document.querySelector("#eq")
 
 const historyDisplay = document.querySelector('#history-display');
 const resultDisplay = document.querySelector("#result-display")
@@ -86,10 +87,60 @@ function appendNumber(num){
 
 numberButtons.forEach((button) => {
     button.addEventListener("click", ()=>{
-        console.log(button.textContent)
+        
         appendNumber(button.getAttribute('data-num'));
         updateDisplay();
     })
+})
+
+operationButtons.forEach((button) => {
+    button.addEventListener("click", ()=>{
+        chooseOperation(button.innerText);
+        updateDisplay();
+
+    })
+})
+
+function chooseOperation(op) {
+    if (currentOperand === '') return;
+    
+    // If we already have a previous number, do the math before starting a new operation (chaining)
+    if (previousOperand !== '') {
+        compute();
+    }
+    
+    // Set the operation, move the current number to previous, and clear current for the next number
+    operation = op;
+    previousOperand = currentOperand;
+    currentOperand = '';
+}
+
+function compute() {
+    let result;
+    const prev = parseFloat(previousOperand);
+    const current = parseFloat(currentOperand);
+
+    // Stop if there aren't two valid numbers to calculate
+    if (isNaN(prev) || isNaN(current)) return;
+
+    // Call the operate function we built earlier
+    result = operate(operation, prev, current);
+
+    // Update the state with the new result
+    currentOperand = result.toString();
+    operation = undefined;
+    previousOperand = '';
+}
+
+equalTo.addEventListener("click",()=>{
+    const prev = previousOperand;
+    const current = currentOperand;
+    const op = operation;
+    compute();
+    updateDisplay();
+    if (op != null) {
+        historyDisplay.innerText = `${prev} ${op} ${current} =`;
+    }
 })
 updateDisplay();
 
