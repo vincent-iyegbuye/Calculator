@@ -77,8 +77,13 @@ function updateDisplay() {
         historyDisplay.innerText = '';
     }
 }
+let shouldResetScreen = false;
 
 function appendNumber(num){
+    if (shouldResetScreen) {
+        currentOperand = '';
+        shouldResetScreen = false; // Reset the flag so they can type multi-digit numbers again
+    }
     if (num === '.' && currentOperand.includes('.')) return;
 
     currentOperand = currentOperand.toString() + num.toString();
@@ -102,7 +107,13 @@ operationButtons.forEach((button) => {
 })
 
 function chooseOperation(op) {
-    if (currentOperand === '') return;
+    if (currentOperand === ''){
+        if(previousOperand !== ''){
+            operation = op;
+        }
+        return;
+
+    } 
     
     // If we already have a previous number, do the math before starting a new operation (chaining)
     if (previousOperand !== '') {
@@ -141,6 +152,7 @@ equalTo.addEventListener("click",()=>{
     if (op != null) {
         historyDisplay.innerText = `${prev} ${op} ${current} =`;
     }
+    shouldResetScreen = true;
 })
 updateDisplay();
 
