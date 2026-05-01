@@ -54,3 +54,42 @@ function operate(operator, a, b) {
             return null;
     }
 }
+
+let previousOperand = '';
+let currentOperand = '';
+let operation = undefined;
+
+const numberButtons = document.querySelectorAll('[data-num]');
+const operationButtons = document.querySelectorAll('[data-op]');
+
+const historyDisplay = document.querySelector('#history-display');
+const resultDisplay = document.querySelector("#result-display")
+
+function updateDisplay() {
+    // Show the current number, or default to '0' if it's empty
+    resultDisplay.innerText = currentOperand || '0'; 
+    
+    // If an operation is chosen, show the history at the top
+    if (operation != null) {
+        historyDisplay.innerText = `${previousOperand} ${operation}`;
+    } else {
+        historyDisplay.innerText = '';
+    }
+}
+
+function appendNumber(num){
+    if (num === '.' && currentOperand.includes('.')) return;
+
+    currentOperand = currentOperand.toString() + num.toString();
+
+}
+
+numberButtons.forEach((button) => {
+    button.addEventListener("click", ()=>{
+        console.log(button.textContent)
+        appendNumber(button.getAttribute('data-num'));
+        updateDisplay();
+    })
+})
+updateDisplay();
+
