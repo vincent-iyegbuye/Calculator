@@ -64,7 +64,9 @@ const operationButtons = document.querySelectorAll('#op');
 const equalTo = document.querySelector("#eq")
 
 const historyDisplay = document.querySelector('#history-display');
-const resultDisplay = document.querySelector("#result-display")
+const resultDisplay = document.querySelector("#result-display");
+const clearBtn =  document.querySelector('#AC');
+
 
 function updateDisplay() {
     // Show the current number, or default to '0' if it's empty
@@ -106,13 +108,17 @@ operationButtons.forEach((button) => {
     })
 })
 
+clearBtn.addEventListener("click",()=>{
+     clear();
+     updateDisplay();
+    });
+
 function chooseOperation(op) {
     if (currentOperand === ''){
         if(previousOperand !== ''){
             operation = op;
         }
         return;
-
     } 
     
     // If we already have a previous number, do the math before starting a new operation (chaining)
@@ -137,10 +143,26 @@ function compute() {
     // Call the operate function we built earlier
     result = operate(operation, prev, current);
 
+    if(typeof result === 'number'){
+        currentOperand = roundResult(Number(result));
+    }else{
+         currentOperand = result.toString();
+    }
+
     // Update the state with the new result
-    currentOperand = result.toString();
     operation = undefined;
     previousOperand = '';
+}
+
+function roundResult(number) {
+    return Math.round(number * 100000000) / 100000000;
+}
+
+function clear() {
+    currentOperand = '';
+    previousOperand = '';
+    operation = undefined;
+    shouldResetScreen = false;
 }
 
 equalTo.addEventListener("click",()=>{
@@ -153,6 +175,26 @@ equalTo.addEventListener("click",()=>{
         historyDisplay.innerText = `${prev} ${op} ${current} =`;
     }
     shouldResetScreen = true;
+})
+
+function deleteNumber() {
+    if (currentOperand === "UNDEFINED") {
+        clear();
+        return;
+    }
+    
+    // Chop off the very last character of the string
+    if(currentOperand === ''){
+        return;
+    }
+    currentOperand = currentOperand.toString().slice(0, -1);
+}
+
+const del = document.querySelector("#del");
+del.addEventListener("click", () => {
+    deleteNumber();
+    updateDisplay();
+
 })
 updateDisplay();
 
